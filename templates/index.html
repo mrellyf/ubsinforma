@@ -1,0 +1,74 @@
+
+{% extends "base.html" %}
+
+{% block title %}Mural de avisos | UBS Informa{% endblock %}
+
+{% block content %}
+
+<section class="cabecalho-pagina">
+    <div>
+        <p class="sobretitulo">MURAL INFORMATIVO</p>
+
+        <h1>{{ unidade.nome }}</h1>
+
+        <p class="subtexto">
+            {{ unidade.endereco }}
+        </p>
+    </div>
+
+    <a href="{{ url_for('inicio') }}" class="botao secundario">
+        ← Escolher outra UBS
+    </a>
+</section>
+
+<section>
+    <div class="cabecalho-pagina">
+        <div>
+            <h2>Comunicados e avisos</h2>
+            <p class="subtexto">
+                Confira as novidades e informações da sua unidade.
+            </p>
+        </div>
+    </div>
+
+    <div class="lista-avisos">
+
+        {% for aviso in avisos %}
+
+        <article class="aviso-card">
+
+            <div class="etiquetas">
+                <span class="etiqueta">
+                    {{ aviso.categoria }}
+                </span>
+
+                <span class="etiqueta neutra">
+                    {{ aviso.prioridade }}
+                </span>
+            </div>
+
+            <h2>{{ aviso.titulo }}</h2>
+
+            <p>{{ aviso.descricao }}</p>
+
+            <small>
+                📅 {{ aviso.data.strftime('%d/%m/%Y') }}
+                &nbsp; · &nbsp;
+                🕒 {{ aviso.horario.strftime('%H:%M') }}
+            </small>
+
+        </article>
+
+        {% else %}
+
+        <div class="vazio">
+            <h2>Nenhum aviso publicado ainda.</h2>
+            <p>Volte em breve para conferir as novidades da unidade!</p>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</section>
+
+{% endblock %}

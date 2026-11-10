@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}UBS Informa{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="topo">
+        <div class="container topo-conteudo">
+            <a href="{{ url_for('inicio') }}" class="logo">
+                <span class="logo-icone">✚</span>
+                <span>UBS <strong>Informa</strong></span>
+            </a>
+
+            <nav>
+                <a href="{{ url_for('inicio') }}">Início</a>
+                <a href="{{ url_for('login') }}">Área do profissional</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container principal">
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, mensagem in mensagens %}
+                    <div class="mensagem {{ categoria }}">
+                        {{ mensagem }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <footer class="rodape">
+        <p>UBS Informa · Informação e cuidado para todos.</p>
+        <p>Um projeto voltado à comunicação nas Unidades Básicas de Saúde.</p>
+    </footer>
+
+</body>
+</html>

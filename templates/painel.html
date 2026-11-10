@@ -1,0 +1,155 @@
+
+{% extends "base.html" %}
+
+{% block title %}Painel do profissional | UBS Informa{% endblock %}
+
+{% block content %}
+
+<section class="cabecalho-pagina">
+    <div>
+        <p class="sobretitulo">ÁREA DO PROFISSIONAL</p>
+        <h1>Painel de gerenciamento</h1>
+        <p class="subtexto">
+            Bem-vindo(a), {{ session.profissional_email }}!
+        </p>
+    </div>
+
+    <a href="{{ url_for('sair') }}" class="botao secundario">
+        Sair da conta
+    </a>
+</section>
+
+<!-- CADASTRO DE AVISOS -->
+<section class="form-card">
+
+    <h2>＋ Publicar novo aviso</h2>
+
+    <p class="subtexto" style="margin-bottom: 25px;">
+        Preencha as informações abaixo para adicionar um comunicado ao mural.
+    </p>
+
+    <form method="POST"
+          action="{{ url_for('novo_aviso') }}"
+          class="form-grid">
+
+        <div class="campo largo">
+            <label for="titulo">Título do aviso</label>
+            <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                placeholder="Ex: Campanha de vacinação"
+                maxlength="150"
+                required
+            >
+        </div>
+
+        <div class="campo">
+            <label for="categoria">Categoria</label>
+            <select id="categoria" name="categoria">
+                <option value="Aviso">Aviso</option>
+                <option value="Vacinação">Vacinação</option>
+                <option value="Campanha de Saúde">Campanha de Saúde</option>
+                <option value="Atendimento">Atendimento</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="prioridade">Prioridade</label>
+            <select id="prioridade" name="prioridade">
+                <option value="Normal">Normal</option>
+                <option value="Alta">Alta</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="data">Data</label>
+            <input type="date" id="data" name="data" required>
+        </div>
+
+        <div class="campo">
+            <label for="horario">Horário</label>
+            <input type="time" id="horario" name="horario" required>
+        </div>
+
+        <div class="campo largo">
+            <label for="descricao">Descrição do aviso</label>
+            <textarea
+                id="descricao"
+                name="descricao"
+                rows="5"
+                placeholder="Escreva as informações do comunicado..."
+                required
+            ></textarea>
+        </div>
+
+        <div class="campo largo">
+            <button type="submit" class="botao publicar">
+                Publicar aviso →
+            </button>
+        </div>
+
+    </form>
+
+</section>
+
+<!-- AVISOS CADASTRADOS -->
+<section class="form-card">
+
+    <h2>Avisos publicados</h2>
+
+    <p class="subtexto" style="margin-bottom: 25px;">
+        Gerencie os comunicados que estão disponíveis no mural da sua UBS.
+    </p>
+
+    {% if avisos %}
+
+    <div class="tabela-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Categoria</th>
+                    <th>Prioridade</th>
+                    <th>Data</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for aviso in avisos %}
+                <tr>
+                    <td>{{ aviso.titulo }}</td>
+                    <td>{{ aviso.categoria }}</td>
+                    <td>{{ aviso.prioridade }}</td>
+                    <td>{{ aviso.data.strftime('%d/%m/%Y') }}</td>
+
+                    <td>
+                        <form
+                            method="POST"
+                            action="{{ url_for('remover_aviso', aviso_id=aviso.id_mural) }}"
+                            onsubmit="return confirm('Deseja realmente remover este aviso?')"
+                        >
+                            <button type="submit" class="botao-remover">
+                                Remover
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+
+    <div class="vazio">
+        <h3>Nenhum aviso cadastrado</h3>
+        <p>Os avisos publicados aparecerão aqui.</p>
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

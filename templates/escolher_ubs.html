@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+
+{% block title %}Escolher UBS | UBS Informa{% endblock %}
+
+{% block content %}
+
+<section class="cabecalho-pagina">
+    <div>
+        <p class="sobretitulo">INFORMAÇÃO E CUIDADO</p>
+
+        <h1>Encontre sua unidade de saúde</h1>
+
+        <p class="subtexto">
+            Selecione a UBS desejada para consultar avisos,
+            campanhas e informações importantes.
+        </p>
+    </div>
+
+    <a href="{{ url_for('login') }}" class="botao secundario">
+        Área do profissional
+    </a>
+</section>
+
+<section class="lista-ubs">
+
+    {% for unidade in unidades %}
+
+    <article class="ubs-card">
+
+        <div class="ubs-icone">✚</div>
+
+        <h2>{{ unidade.nome }}</h2>
+
+        <p>{{ unidade.endereco }}</p>
+
+        <a href="{{ url_for('mural_ubs', ubs_id=unidade.id_ubs) }}"
+           class="botao">
+            Consultar avisos →
+        </a>
+
+    </article>
+
+    {% else %}
+
+    <div class="vazio">
+        <h2>Nenhuma UBS cadastrada</h2>
+        <p>As unidades de saúde aparecerão aqui quando forem cadastradas.</p>
+    </div>
+
+    {% endfor %}
+
+</section>
+
+{% endblock %}

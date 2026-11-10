@@ -1,0 +1,399 @@
+
+/* CONFIGURAÇÕES GERAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f8f6;
+    color: #263b32;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    width: 90%;
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+/* CABEÇALHO */
+.topo {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5eee9;
+    padding: 20px 0;
+}
+
+.topo-conteudo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #267653;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo strong {
+    color: #9b78b8;
+}
+
+.logo-icone {
+    background-color: #e4f3e9;
+    color: #267653;
+    padding: 9px 13px;
+    border-radius: 12px;
+}
+
+nav {
+    display: flex;
+    gap: 25px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #52645b;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #267653;
+}
+
+/* CONTEÚDO PRINCIPAL */
+.principal {
+    flex: 1;
+    padding-top: 45px;
+    padding-bottom: 55px;
+}
+
+.cabecalho-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.sobretitulo {
+    color: #9b78b8;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 32px;
+    color: #267653;
+    margin-bottom: 12px;
+}
+
+.subtexto {
+    color: #718078;
+    line-height: 1.6;
+}
+
+/* BOTÕES */
+.botao {
+    display: inline-block;
+    padding: 13px 22px;
+    border: none;
+    border-radius: 10px;
+    background-color: #267653;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao:hover {
+    background-color: #1d6042;
+    transform: translateY(-2px);
+}
+
+.botao.secundario {
+    background-color: #eee7f4;
+    color: #80629c;
+}
+
+.botao.secundario:hover {
+    background-color: #e3d7ed;
+}
+
+/* ESCOLHA DAS UBS */
+.lista-ubs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 22px;
+}
+
+.ubs-card {
+    background-color: #ffffff;
+    border: 1px solid #e6eee9;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 18px rgba(35, 90, 62, 0.05);
+    transition: 0.2s;
+}
+
+.ubs-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 9px 24px rgba(35, 90, 62, 0.10);
+}
+
+.ubs-card h2 {
+    color: #267653;
+    font-size: 20px;
+    margin: 15px 0 10px;
+}
+
+.ubs-card p {
+    color: #718078;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.ubs-icone {
+    background-color: #e4f3e9;
+    color: #267653;
+    display: inline-block;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 22px;
+}
+
+/* CARTÕES DE AVISOS */
+.lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+.aviso-card {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #e6eee9;
+    box-shadow: 0 5px 18px rgba(35, 90, 62, 0.05);
+}
+
+.aviso-card h2 {
+    color: #267653;
+    font-size: 20px;
+    margin: 15px 0;
+}
+
+.aviso-card p {
+    color: #65766d;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.aviso-card small {
+    color: #89958e;
+}
+
+.etiquetas {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.etiqueta {
+    background-color: #e4f3e9;
+    color: #267653;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.etiqueta.neutra {
+    background-color: #eee7f4;
+    color: #80629c;
+}
+
+/* FORMULÁRIOS */
+.form-card {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #e6eee9;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 18px rgba(35, 90, 62, 0.05);
+}
+
+.form-card h2 {
+    color: #267653;
+    font-size: 21px;
+    margin-bottom: 25px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.campo.largo {
+    grid-column: 1 / -1;
+}
+
+.campo label {
+    color: #52645b;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #dce7e0;
+    border-radius: 9px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: #9b78b8;
+    box-shadow: 0 0 0 3px rgba(155, 120, 184, 0.12);
+}
+
+.publicar {
+    width: 100%;
+}
+
+/* LOGIN */
+.login-card {
+    max-width: 450px;
+    margin: 30px auto;
+}
+
+/* TABELA DO PAINEL */
+.tabela-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #e8eee9;
+    font-size: 14px;
+}
+
+th {
+    color: #267653;
+    background-color: #f4f8f6;
+}
+
+.botao-remover {
+    background-color: #f9e8e8;
+    color: #b34e4e;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* MENSAGENS */
+.mensagem {
+    padding: 14px;
+    border-radius: 9px;
+    margin-bottom: 20px;
+}
+
+.mensagem.sucesso {
+    background-color: #e4f3e9;
+    color: #267653;
+}
+
+.mensagem.erro {
+    background-color: #f9e8e8;
+    color: #b34e4e;
+}
+
+.mensagem.aviso {
+    background-color: #eee7f4;
+    color: #80629c;
+}
+
+.vazio {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    color: #718078;
+    text-align: center;
+}
+
+/* RODAPÉ */
+.rodape {
+    background-color: #ffffff;
+    border-top: 1px solid #e5eee9;
+    text-align: center;
+    padding: 25px 15px;
+    color: #89958e;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 650px) {
+    .topo-conteudo,
+    .cabecalho-pagina {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .campo.largo {
+        grid-column: auto;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+}
