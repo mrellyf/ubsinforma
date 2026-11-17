@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+
+{% block title %}Alterar e-mail | UBS Informa{% endblock %}
+
+{% block content %}
+
+<section class="cabecalho-pagina">
+    <p class="sobretitulo">ÁREA ADMINISTRATIVA</p>
+    <h1>Alterar e-mail de acesso</h1>
+    <p class="subtexto">UBS: {{ profissional.nome }}</p>
+</section>
+
+<section class="card">
+    <h2>Atualizar e-mail</h2>
+
+    <p>E-mail atual: <strong>{{ profissional.email }}</strong></p>
+
+    <form method="POST">
+
+        <label for="email">Novo e-mail de acesso</label>
+
+        <input
+            type="email"
+            id="email"
+            name="email"
+            value="{{ profissional.email }}"
+            required
+        >
+
+        <button type="submit">Salvar novo e-mail</button>
+
+    </form>
+
+    <p>
+        <a href="{{ url_for('painel_administrador') }}">
+            Voltar ao painel administrativo
+        </a>
+    </p>
+</section>
+
+{% endblock %}
+

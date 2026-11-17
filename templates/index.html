@@ -5,14 +5,14 @@
 
 {% block content %}
 
-<section class="cabecalho-pagina">
+<section class="cabecalho-pagina mural-cabecalho">
     <div>
         <p class="sobretitulo">MURAL INFORMATIVO</p>
 
         <h1>{{ unidade.nome }}</h1>
 
         <p class="subtexto">
-            {{ unidade.endereco }}
+            📍 {{ unidade.endereco }}
         </p>
     </div>
 
@@ -21,49 +21,99 @@
     </a>
 </section>
 
-<section>
-    <div class="cabecalho-pagina">
+<section class="secao-comunicados">
+
+    <div class="titulo-comunicados">
         <div>
+            <p class="sobretitulo">FIQUE POR DENTRO</p>
             <h2>Comunicados e avisos</h2>
             <p class="subtexto">
-                Confira as novidades e informações da sua unidade.
+                Informações importantes para você e sua comunidade.
             </p>
         </div>
+
+        <span class="contador-avisos">
+            {{ avisos|length }}
+            {% if avisos|length == 1 %}
+                comunicado
+            {% else %}
+                comunicados
+            {% endif %}
+        </span>
     </div>
 
     <div class="lista-avisos">
 
         {% for aviso in avisos %}
 
-        <article class="aviso-card">
+        {% set prioridade = aviso.prioridade|lower %}
 
-            <div class="etiquetas">
-                <span class="etiqueta">
-                    {{ aviso.categoria }}
-                </span>
+        <article class="aviso-card
+            {% if 'urgente' in prioridade %}
+                aviso-urgente
+            {% elif 'importante' in prioridade or 'alta' in prioridade %}
+                aviso-importante
+            {% else %}
+                aviso-normal
+            {% endif %}">
 
-                <span class="etiqueta neutra">
-                    {{ aviso.prioridade }}
-                </span>
+            <div class="aviso-topo">
+                <div class="etiquetas">
+                    <span class="etiqueta">
+                        {{ aviso.categoria }}
+                    </span>
+
+                    <span class="etiqueta prioridade-etiqueta">
+                        {{ aviso.prioridade }}
+                    </span>
+                </div>
+
+                {% if 'urgente' in prioridade %}
+                    <span class="selo-prioridade">ATENÇÃO</span>
+                {% endif %}
             </div>
 
-            <h2>{{ aviso.titulo }}</h2>
+            <div class="aviso-conteudo">
+                <h2>{{ aviso.titulo }}</h2>
 
-            <p>{{ aviso.descricao }}</p>
+                <p>{{ aviso.descricao }}</p>
+            </div>
 
-            <small>
-                📅 {{ aviso.data.strftime('%d/%m/%Y') }}
-                &nbsp; · &nbsp;
-                🕒 {{ aviso.horario.strftime('%H:%M') }}
-            </small>
+            <div class="aviso-informacoes">
+
+                <div class="informacao-data">
+                    <span class="informacao-icone">📅</span>
+                    <div>
+                        <small>DATA</small>
+                        <strong>
+                            {{ aviso.data.strftime('%d/%m/%Y') }}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="informacao-data">
+                    <span class="informacao-icone">🕒</span>
+                    <div>
+                        <small>HORÁRIO</small>
+                        <strong>
+                            {{ aviso.horario.strftime('%H:%M') }}
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
 
         </article>
 
         {% else %}
 
         <div class="vazio">
+            <span class="vazio-icone">📢</span>
             <h2>Nenhum aviso publicado ainda.</h2>
-            <p>Volte em breve para conferir as novidades da unidade!</p>
+            <p>
+                Assim que a unidade publicar um comunicado,
+                ele aparecerá aqui.
+            </p>
         </div>
 
         {% endfor %}

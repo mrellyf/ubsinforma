@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<section class="cabecalho-pagina">
+<section class="cabecalho-pagina painel-cabecalho">
     <div>
         <p class="sobretitulo">ÁREA DO PROFISSIONAL</p>
         <h1>Painel de gerenciamento</h1>
@@ -19,14 +19,19 @@
     </a>
 </section>
 
-<!-- CADASTRO DE AVISOS -->
-<section class="form-card">
+<!-- PUBLICAR AVISO -->
 
-    <h2>＋ Publicar novo aviso</h2>
+<section class="form-card painel-publicacao">
 
-    <p class="subtexto" style="margin-bottom: 25px;">
-        Preencha as informações abaixo para adicionar um comunicado ao mural.
-    </p>
+    <div class="painel-secao-titulo">
+        <div class="painel-icone">＋</div>
+        <div>
+            <h2>Publicar novo aviso</h2>
+            <p class="subtexto">
+                Compartilhe informações importantes com a comunidade.
+            </p>
+        </div>
+    </div>
 
     <form method="POST"
           action="{{ url_for('novo_aviso') }}"
@@ -78,9 +83,12 @@
                 id="descricao"
                 name="descricao"
                 rows="5"
-                placeholder="Escreva as informações do comunicado..."
+                placeholder="Escreva as informações do comunicado com clareza..."
                 required
             ></textarea>
+            <small class="orientacao-campo">
+                Dica: informe o que acontecerá, quando e onde.
+            </small>
         </div>
 
         <div class="campo largo">
@@ -90,17 +98,30 @@
         </div>
 
     </form>
-
 </section>
 
-<!-- AVISOS CADASTRADOS -->
-<section class="form-card">
+<!-- AVISOS PUBLICADOS -->
 
-    <h2>Avisos publicados</h2>
+<section class="form-card painel-gerenciamento">
 
-    <p class="subtexto" style="margin-bottom: 25px;">
-        Gerencie os comunicados que estão disponíveis no mural da sua UBS.
-    </p>
+    <div class="painel-lista-cabecalho">
+        <div>
+            <p class="sobretitulo">GERENCIAMENTO</p>
+            <h2>Avisos publicados</h2>
+            <p class="subtexto">
+                Consulte e gerencie os comunicados da sua UBS.
+            </p>
+        </div>
+
+        <span class="contador-avisos">
+            {{ avisos|length }}
+            {% if avisos|length == 1 %}
+                aviso
+            {% else %}
+                avisos
+            {% endif %}
+        </span>
+    </div>
 
     {% if avisos %}
 
@@ -119,9 +140,23 @@
             <tbody>
                 {% for aviso in avisos %}
                 <tr>
-                    <td>{{ aviso.titulo }}</td>
+                    <td class="titulo-tabela">
+                        {{ aviso.titulo }}
+                    </td>
+
                     <td>{{ aviso.categoria }}</td>
-                    <td>{{ aviso.prioridade }}</td>
+
+                    <td>
+                        <span class="prioridade-tabela
+                            {% if aviso.prioridade|lower == 'alta' %}
+                                prioridade-alta
+                            {% else %}
+                                prioridade-normal
+                            {% endif %}">
+                            {{ aviso.prioridade }}
+                        </span>
+                    </td>
+
                     <td>{{ aviso.data.strftime('%d/%m/%Y') }}</td>
 
                     <td>
@@ -144,8 +179,11 @@
     {% else %}
 
     <div class="vazio">
-        <h3>Nenhum aviso cadastrado</h3>
-        <p>Os avisos publicados aparecerão aqui.</p>
+        <span class="vazio-icone">📢</span>
+        <h3>Nenhum aviso publicado</h3>
+        <p>
+            Quando você publicar um comunicado, ele aparecerá nesta área.
+        </p>
     </div>
 
     {% endif %}

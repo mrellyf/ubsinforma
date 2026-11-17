@@ -17,9 +17,15 @@
         </p>
     </div>
 
-    <a href="{{ url_for('login') }}" class="botao secundario">
-        Área do profissional
-    </a>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{{ url_for('login') }}" class="botao secundario">
+            Área do profissional
+        </a>
+
+        <a href="{{ url_for('login_administrador') }}" class="botao">
+            Área administrativa
+        </a>
+    </div>
 </section>
 
 <section class="lista-ubs">

@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+
+{% block title %}Redefinir senha | UBS Informa{% endblock %}
+
+{% block content %}
+
+<section class="cabecalho-pagina">
+    <p class="sobretitulo">ÁREA ADMINISTRATIVA</p>
+    <h1>Redefinir senha</h1>
+    <p class="subtexto">
+        UBS: {{ profissional.nome }}
+    </p>
+</section>
+
+<section class="card">
+    <h2>Dados do acesso</h2>
+
+    <p><strong>E-mail:</strong> {{ profissional.email }}</p>
+
+    <form method="POST">
+
+        <label for="senha">Nova senha</label>
+        <input
+            type="password"
+            id="senha"
+            name="senha"
+            placeholder="Digite a nova senha"
+            minlength="6"
+            required
+        >
+
+        <button type="submit">Salvar nova senha</button>
+
+    </form>
+
+    <p>
+        <a href="{{ url_for('painel_administrador') }}">
+            Voltar ao painel
+        </a>
+    </p>
+</section>
+
+{% endblock %}

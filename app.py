@@ -53,6 +53,17 @@ def profissional_logado(funcao):
         return funcao(*args, **kwargs)
 
     return verificar
+# VERIFICAR SE O ADMINISTRADOR ESTÁ LOGADO
+def administrador_logado(funcao):
+    @wraps(funcao)
+    def verificar(*args, **kwargs):
+        if "administrador_id" not in session:
+            flash("Faça login como administrador para acessar essa área.", "erro")
+            return redirect(url_for("login_administrador"))
+
+        return funcao(*args, **kwargs)
+
+    return verificar    
 
 
 # PÁGINA INICIAL - ESCOLHER UBS
@@ -122,101 +133,19 @@ def mural_ubs(ubs_id):
         avisos=avisos
     )
 
-
-# CADASTRO DE PROFISSIONAL
+# CADASTRO PÚBLICO DESATIVADO
 @app.route("/cadastro-profissional", methods=["GET", "POST"])
 def cadastro_profissional():
-    conexao = conectar_banco()
-    cursor = conexao.cursor()
-
-    if request.method == "POST":
-        email = request.form["email"].strip().lower()
-        senha = request.form["senha"]
-        id_ubs = request.form["id_ubs"]
-
-        if len(senha) < 6:
-            flash("A senha precisa ter pelo menos 6 caracteres.", "erro")
-
-        else:
-            cursor.execute("""
-                SELECT id_profissional
-                FROM profissional
-                WHERE email = %s
-            """, (email,))
-
-            existente = cursor.fetchone()
-
-            if existente:
-                flash("Este e-mail já está cadastrado.", "erro")
-
-            else:
-                cursor.execute("""
-                    SELECT id_ubs
-                    FROM ubs
-                    WHERE id_ubs = %s
-                """, (id_ubs,))
-
-                unidade = cursor.fetchone()
-
-                if unidade is None:
-                    flash("Selecione uma UBS válida.", "erro")
-
-                else:
-                    cursor.execute("""
-                        SELECT id_profissional
-                        FROM profissional
-                        WHERE id_ubs = %s
-                    """, (id_ubs,))
-
-                    responsavel = cursor.fetchone()
-
-                    if responsavel:
-                        flash(
-                            "Esta UBS já possui um profissional responsável cadastrado.",
-                            "erro"
-                        )
-
-                    else:
-                        senha_protegida = generate_password_hash(senha)
-
-                        cursor.execute("""
-                            INSERT INTO profissional
-                            (email, senha, id_ubs)
-                            VALUES (%s, %s, %s)
-                        """, (email, senha_protegida, id_ubs))
-
-                        conexao.commit()
-
-                        flash(
-                            "Cadastro realizado com sucesso!",
-                            "sucesso"
-                        )
-
-                        cursor.close()
-                        conexao.close()
-
-                        return redirect(url_for("login"))
-
-    cursor.execute("""
-        SELECT id_ubs, nome, endereco
-        FROM ubs
-        ORDER BY nome
-    """)
-
-    unidades = cursor.fetchall()
-
-    cursor.close()
-    conexao.close()
-
-    return render_template(
-        "cadastro_profissional.html",
-        unidades=unidades
+    flash(
+        "Os acessos são criados exclusivamente pelo administrador.",
+        "erro"
     )
-
+    return redirect(url_for("login"))
 
 # LOGIN DO PROFISSIONAL
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
         email = request.form["email"].strip().lower()
         senha = request.form["senha"]
@@ -429,7 +358,325 @@ def sair():
 
     return redirect(url_for("inicio"))
 
+# LOGIN DO ADMINISTRADOR
+@app.route("/admin/login", methods=["GET", "POST"])
+def login_administrador():
+
+    if request.method == "POST":
+        email = request.form["email"].strip().lower()
+        senha = request.form["senha"]
+
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+
+        cursor.execute("""
+            SELECT id_administrador, nome, email, senha
+            FROM administrador
+            WHERE email = %s
+        """, (email,))
+
+        administrador = cursor.fetchone()
+
+        cursor.close()
+        conexao.close()
+
+        if administrador and check_password_hash(
+            administrador["senha"], senha
+        ):
+            session.clear()
+
+            session["administrador_id"] = administrador["id_administrador"]
+            session["administrador_nome"] = administrador["nome"]
+
+            flash("Login realizado com sucesso!", "sucesso")
+            return redirect(url_for("painel_administrador"))
+
+        flash("E-mail ou senha incorretos.", "erro")
+
+    return render_template("login_administrador.html")
+
+
+# PAINEL DO ADMINISTRADOR
+@app.route("/admin/painel")
+@administrador_logado
+def painel_administrador():
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT
+            u.id_ubs,
+            u.nome,
+            u.endereco,
+            p.id_profissional,
+            p.email
+        FROM ubs u
+        LEFT JOIN profissional p
+            ON u.id_ubs = p.id_ubs
+        ORDER BY u.nome
+    """)
+
+    unidades = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return render_template(
+        "painel_administrador.html",
+        unidades=unidades
+    )
+
+# SAIR DA CONTA DO ADMINISTRADOR
+@app.route("/admin/sair")
+@administrador_logado
+def sair_administrador():
+
+    session.clear()
+
+    flash("Você saiu da conta administrativa.", "sucesso")
+    return redirect(url_for("inicio"))   
+
+# CADASTRAR UBS E CRIAR SEU ACESSO
+@app.route("/admin/ubs/nova", methods=["POST"])
+@administrador_logado
+def cadastrar_ubs():
+
+    nome = request.form["nome"].strip()
+    endereco = request.form["endereco"].strip()
+    email = request.form["email"].strip().lower()
+    senha = request.form["senha"]
+
+    if len(senha) < 6:
+        flash("A senha precisa ter pelo menos 6 caracteres.", "erro")
+        return redirect(url_for("painel_administrador"))
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT id_profissional
+            FROM profissional
+            WHERE email = %s
+        """, (email,))
+
+        if cursor.fetchone():
+            flash("Este e-mail já está sendo utilizado.", "erro")
+            return redirect(url_for("painel_administrador"))
+
+        cursor.execute("""
+            INSERT INTO ubs (nome, endereco)
+            VALUES (%s, %s)
+            RETURNING id_ubs
+        """, (nome, endereco))
+
+        nova_ubs = cursor.fetchone()
+        id_ubs = nova_ubs["id_ubs"]
+
+        senha_protegida = generate_password_hash(senha)
+
+        cursor.execute("""
+            INSERT INTO profissional (email, senha, id_ubs)
+            VALUES (%s, %s, %s)
+        """, (email, senha_protegida, id_ubs))
+
+        conexao.commit()
+
+        flash("UBS cadastrada e acesso criado com sucesso!", "sucesso")
+
+    except Exception:
+        conexao.rollback()
+        flash("Não foi possível cadastrar a UBS. Verifique os dados.", "erro")
+
+    finally:
+        cursor.close()
+        conexao.close()
+
+    return redirect(url_for("painel_administrador")) 
+
+
+# REDEFINIR SENHA DE UMA UBS
+@app.route("/admin/ubs/<int:profissional_id>/redefinir-senha", methods=["GET", "POST"])
+@administrador_logado
+def redefinir_senha_ubs(profissional_id):
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT p.id_profissional, p.email, u.nome
+        FROM profissional p
+        JOIN ubs u ON p.id_ubs = u.id_ubs
+        WHERE p.id_profissional = %s
+    """, (profissional_id,))
+
+    profissional = cursor.fetchone()
+
+    if profissional is None:
+        cursor.close()
+        conexao.close()
+        flash("Acesso não encontrado.", "erro")
+        return redirect(url_for("painel_administrador"))
+
+    if request.method == "POST":
+
+        senha = request.form["senha"]
+
+        if len(senha) < 6:
+            flash("A senha precisa ter pelo menos 6 caracteres.", "erro")
+        else:
+            senha_protegida = generate_password_hash(senha)
+
+            cursor.execute("""
+                UPDATE profissional
+                SET senha = %s
+                WHERE id_profissional = %s
+            """, (senha_protegida, profissional_id))
+
+            conexao.commit()
+
+            cursor.close()
+            conexao.close()
+
+            flash("Senha redefinida com sucesso!", "sucesso")
+            return redirect(url_for("painel_administrador"))
+
+    cursor.close()
+    conexao.close()
+
+    return render_template(
+        "redefinir_senha_ubs.html",
+        profissional=profissional
+    )
+
+# ALTERAR E-MAIL DE ACESSO DE UMA UBS
+@app.route("/admin/profissional/<int:profissional_id>/email", methods=["GET", "POST"])
+@administrador_logado
+def alterar_email_ubs(profissional_id):
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT p.id_profissional, p.email, u.nome
+            FROM profissional p
+            JOIN ubs u ON p.id_ubs = u.id_ubs
+            WHERE p.id_profissional = %s
+        """, (profissional_id,))
+
+        profissional = cursor.fetchone()
+
+        if profissional is None:
+            flash("Acesso profissional não encontrado.", "erro")
+            return redirect(url_for("painel_administrador"))
+
+        if request.method == "POST":
+
+            novo_email = request.form["email"].strip().lower()
+
+            if not novo_email:
+                flash("Informe um e-mail válido.", "erro")
+
+            else:
+                cursor.execute("""
+                    SELECT id_profissional
+                    FROM profissional
+                    WHERE email = %s
+                    AND id_profissional <> %s
+                """, (novo_email, profissional_id))
+
+                if cursor.fetchone():
+                    flash("Este e-mail já está sendo utilizado.", "erro")
+
+                else:
+                    cursor.execute("""
+                        UPDATE profissional
+                        SET email = %s
+                        WHERE id_profissional = %s
+                    """, (novo_email, profissional_id))
+
+                    conexao.commit()
+                    flash("E-mail atualizado com sucesso!", "sucesso")
+                    return redirect(url_for("painel_administrador"))
+
+        return render_template(
+            "alterar_email_ubs.html",
+            profissional=profissional
+        )
+
+    except Exception:
+        conexao.rollback()
+        flash("Não foi possível atualizar o e-mail.", "erro")
+        return redirect(url_for("painel_administrador"))
+
+    finally:
+        cursor.close()
+        conexao.close()
+
+
+
+# REMOVER UMA UBS E SEUS REGISTROS
+@app.route("/admin/ubs/<int:ubs_id>/remover", methods=["POST"])
+@administrador_logado
+def remover_ubs(ubs_id):
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT nome
+            FROM ubs
+            WHERE id_ubs = %s
+        """, (ubs_id,))
+
+        unidade = cursor.fetchone()
+
+        if unidade is None:
+            flash("UBS não encontrada.", "erro")
+            return redirect(url_for("painel_administrador"))
+
+        # Remove primeiro os avisos da unidade
+        cursor.execute("""
+            DELETE FROM mural
+            WHERE id_ubs = %s
+        """, (ubs_id,))
+
+        # Remove o acesso profissional
+        cursor.execute("""
+            DELETE FROM profissional
+            WHERE id_ubs = %s
+        """, (ubs_id,))
+
+        # Por último, remove a UBS
+        cursor.execute("""
+            DELETE FROM ubs
+            WHERE id_ubs = %s
+        """, (ubs_id,))
+
+        conexao.commit()
+
+        flash(
+            f"A UBS {unidade['nome']} e seus registros foram removidos.",
+            "sucesso"
+        )
+
+    except Exception:
+        conexao.rollback()
+        flash("Não foi possível remover a UBS.", "erro")
+
+    finally:
+        cursor.close()
+        conexao.close()
+
+    return redirect(url_for("painel_administrador"))
+
+
 
 # INICIAR SISTEMA
 if __name__ == "__main__":
     app.run(debug=True)
+
+    

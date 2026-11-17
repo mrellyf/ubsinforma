@@ -1,0 +1,91 @@
+
+{% extends "base.html" %}
+
+{% block title %}Painel administrativo | UBS Informa{% endblock %}
+
+{% block content %}
+
+<section class="cabecalho-pagina">
+    <p class="sobretitulo">ÁREA ADMINISTRATIVA</p>
+    <h1>Painel do administrador</h1>
+    <p class="subtexto">
+        Bem-vindo(a), {{ session.administrador_nome }}!
+    </p>
+</section>
+
+<section class="card">
+    <h2>Cadastrar nova UBS</h2>
+    <p>Preencha os dados da unidade e crie seu acesso ao sistema.</p>
+
+    <form action="{{ url_for('cadastrar_ubs') }}" method="POST">
+
+        <label for="nome">Nome da UBS</label>
+        <input type="text" id="nome" name="nome"
+               placeholder="Ex.: UBS Centro" required>
+
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" name="endereco"
+               placeholder="Digite o endereço da unidade" required>
+
+        <label for="email">E-mail de acesso</label>
+        <input type="email" id="email" name="email"
+               placeholder="Digite o e-mail da UBS" required>
+
+        <label for="senha">Senha de acesso</label>
+        <input type="password" id="senha" name="senha"
+               placeholder="Crie uma senha" minlength="6" required>
+
+        <button type="submit">Cadastrar UBS</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Gerenciamento das UBS</h2>
+    <p>Consulte e gerencie os acessos das unidades cadastradas.</p>
+
+    {% for unidade in unidades %}
+
+        <div class="item-aviso">
+
+            <h3>{{ unidade.nome }}</h3>
+            <p>{{ unidade.endereco }}</p>
+
+            {% if unidade.id_profissional %}
+
+                <p>
+                    <strong>E-mail atual:</strong>
+                    {{ unidade.email }}
+                </p>
+
+                <a href="{{ url_for('alterar_email_ubs', profissional_id=unidade.id_profissional) }}">
+                    Alterar e-mail
+                </a>
+
+                <a href="{{ url_for('redefinir_senha_ubs', profissional_id=unidade.id_profissional) }}">
+                    Redefinir senha
+                </a>
+
+            {% else %}
+                <p>Esta UBS ainda não possui acesso profissional.</p>
+            {% endif %}
+
+            <form
+                action="{{ url_for('remover_ubs', ubs_id=unidade.id_ubs) }}"
+                method="POST"
+                onsubmit="return confirm('ATENÇÃO! Deseja realmente excluir a {{ unidade.nome }}? Todos os avisos e o acesso profissional dessa unidade também serão excluídos permanentemente. Essa ação não poderá ser desfeita.');"
+            >
+                <button type="submit" class="botao-excluir">
+                    Remover UBS
+                </button>
+            </form>
+
+        </div>
+
+    {% else %}
+        <p>Nenhuma UBS cadastrada ainda.</p>
+    {% endfor %}
+</section>
+
+<a href="{{ url_for('sair_administrador') }}">Sair da conta</a>
+
+{% endblock %}
