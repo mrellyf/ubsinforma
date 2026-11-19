@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mural-da-turma
+    name: ubsinforma
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
