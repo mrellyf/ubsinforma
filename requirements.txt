@@ -1,14 +1,7 @@
 Flask
-flask
 flask-sqlalchemy
 python-dotenv
-<<<<<<< Updated upstream
 psycopg[binary]
 flask-login
 gunicorn
 psycopg2-binary
-Flask
-python-dotenv
-=======
-gunicorn
->>>>>>> Stashed changes
