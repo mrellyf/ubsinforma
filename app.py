@@ -32,6 +32,15 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # CONEXÃO COM O BANCO DE DADOS
 def conectar_banco():
+    database_url = os.getenv("DATABASE_URL")
+    print("DATABASE_URL encontrada:", bool(database_url))
+    
+    if database_url:
+        return psycopg2.connect(
+            database_url,
+            cursor_factory=RealDictCursor
+        )
+
     return psycopg2.connect(
         host=os.getenv("DB_HOST", "localhost"),
         port=os.getenv("DB_PORT", "5432"),
